@@ -6,32 +6,32 @@ const DATA_CACHE_NAME = "data-cache-v1";
 
 // install
 self.addEventListener("install", function(evt) {
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log("Your files were pre-cached successfully!");
-      return cache.addAll(FILES_TO_CACHE);
-    })
-  );
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log("Your files were pre-cached successfully!");
+      return cache.addAll(FILES_TO_CACHE);
+    })
+  );
 
-  self.skipWaiting();
+  self.skipWaiting();
 });
 
 // activate
 self.addEventListener("activate", function(evt) {
-  evt.waitUntil(
-    caches.keys().then(keyList => {
-      return Promise.all(
-        keyList.map(key => {
-          if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
-            console.log("Removing old cache data", key);
-            return caches.delete(key);
-          }
-        })
-      );
-    })
-  );
+  evt.waitUntil(
+    caches.keys().then(keyList => {
+      return Promise.all(
+        keyList.map(key => {
+          if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
+            console.log("Removing old cache data", key);
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
 
-  self.clients.claim();
+  self.clients.claim();
 });
 
 // fetch
@@ -40,7 +40,7 @@ self.addEventListener("fetch", evt => {
         console.log('[Service Worker] Fetch(data)', evt.request.url);
     
 evt.respondWith(
-                caches.open(DATA_CACHE_NAME).then(cache => {
+                caches.open(DATA_CACHE_NAME).then(cache => {
                 return fetch(evt.request)
                 .then(response => {
                     if (response.status === 200){
@@ -57,10 +57,10 @@ evt.respondWith(
         }
 
 evt.respondWith(
-    caches.open(CACHE_NAME).then( cache => {
-      return cache.match(evt.request).then(response => {
-        return response || fetch(evt.request);
-      });
-    })
-  );
+    caches.open(CACHE_NAME).then( cache => {
+      return cache.match(evt.request).then(response => {
+        return response || fetch(evt.request);
+      });
+    })
+  );
 });
